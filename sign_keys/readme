@@ -1,0 +1,7 @@
+File name (To verify content sent by gateway engine): uccEngineConsDefaultpublic.pfx
+Password: uccEngineConsDefault1234
+===========================================
+File name (To sign file to be sent to gateway engine): uccEngineprivate.pfx
+
+Password: uccEngine1234
+
