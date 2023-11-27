@@ -5,28 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Helpers\RequestProcessing;
 
 class InvoiceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
 
     {
@@ -63,15 +46,12 @@ class InvoiceController extends Controller
                 'GfsCode' => $data['RequestData']['BillTrxInf']['BillItems']['BillItem'][0]['GfsCode'],
             ];
 
-             $save = Invoice::create($inv_data);
+            $save = Invoice::create($inv_data);
             if ($save) {
-                $resp = Invoice::where('id',$save->id)->first();
-                return response()->json(
+                $resp = Invoice::where('id', $save->id)->first();
+
+                $request_data =
                     [
-                        'SystemAuth' => [
-                            'ServiceCode' => $resp->ServiceCode,
-                            'Signature' => $resp->Signature
-                        ],
                         'FeedbackData' => [
                             'gepgBillSubResp' => [
                                 'BillTrxInf' => [
@@ -81,13 +61,24 @@ class InvoiceController extends Controller
                                     'TrxStsCode' => "7101"
                                 ]
                             ]
-                        ],
-                        'Status' =>
-                        [
-                            'RequestId' => $resp->RequestId,
-                            'Code' => "7101",
-                            'Description' => "Success"
                         ]
+                    ];
+                // $signature = RequestProcessing::SignRequest1($request_data);
+                // dd($signature);
+                return response()->json(
+                    [
+                        'SystemAuth' => [
+                            'ServiceCode' => $resp->ServiceCode,
+                            'Signature' => $resp->Signature
+                        ],
+                        'AckData' => [
+                            'RequestId' => $resp->RequestId,
+                            'SystemAckCode' => "0",
+                            'Description' => "Success",
+
+
+                        ]
+
                     ]
                 );
             }
@@ -103,41 +94,9 @@ class InvoiceController extends Controller
         }
     }
 
-
     public function generate_ctl()
     {
-        $ctl = date('Ymd').random_int(1000,9999);
+        $ctl = date('Ymd') . random_int(1000, 9999);
         return $ctl;
-    }
-    /**
-     * Display the specified resource.
-     */
-    public function show(Invoice $invoice)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Invoice $invoice)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Invoice $invoice)
-    {
-        //
     }
 }
